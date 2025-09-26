@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Mentor</title>
+    <style>
+        body { font-family: Arial; background:#f0f4f8; margin:0; padding:0;}
+        .container{max-width:700px;margin:50px auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+        h1{text-align:center;color:#333;}
+        label{font-weight:bold;}
+        input,button{width:100%;padding:10px;margin:8px 0 20px 0;border-radius:8px;border:1px solid #ccc;font-size:16px;}
+        button{background-color:#4caf50;color:white;border:none;cursor:pointer;}
+        button:hover{background-color:#45a049;}
+        .output{background:#eef2f7;padding:20px;border-radius:10px;white-space:pre-wrap;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>AI Career Mentor</h1>
+    <label for="grade">Your Grade/Class:</label>
+    <input type="text" id="grade" placeholder="e.g., 11th, 12th">
+    
+    <label for="interest">Your Interests:</label>
+    <input type="text" id="interest" placeholder="e.g., Coding, Art, Science">
+    
+    <button onclick="getCareerAdvice()">Get Career Advice</button>
+
+    <div class="output" id="output"></div>
+</div>
+
+<script>
+async function getCareerAdvice(){
+    const grade = document.getElementById('grade').value;
+    const interest = document.getElementById('interest').value;
+    const output = document.getElementById('output');
+
+    if(!grade || !interest){
+        output.innerHTML = "Please enter both grade and interests.";
+        return;
+    }
+
+    output.innerHTML = "Generating career suggestions... Please wait...";
+
+    try{
+        const res = await fetch('http://localhost:3000/career', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ grade, interest })
+        });
+
+        const data = await res.json();
+        const aiText = data?.candidates?.[0]?.content || JSON.stringify(data, null, 2);
+        output.innerHTML = aiText;
+    } catch(err){
+        console.error(err);
+        output.innerHTML = "Error generating career advice. Try again later.";
+    }
+}
+</script>
+</body>
+</html>
